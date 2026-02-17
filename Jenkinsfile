@@ -26,19 +26,27 @@ pipeline {
             }
         }
 
-        stage('Run NGINX') {
-            steps {
-                sh '''
-                docker rm -f nginx-lb || true
-                docker run -d --network lab6-network --name nginx-lb -p 80:80 nginx
-                sleep 3
+       stage('Run NGINX') {
+    steps {
+        sh '''
+        echo "=== Checking nginx config in workspace ==="
+        ls -l nginx
+        cat nginx/default.conf
 
-                docker cp nginx/default.conf nginx-lb:/etc/nginx/conf.d/default.conf
-                docker exec nginx-lb nginx -t
-                docker exec nginx-lb nginx -s reload
-                '''
-            }
-        }
+        docker rm -f nginx-lb || true
+        docker run -d --network lab6-network --name nginx-lb -p 80:80 nginx
+        sleep 3
+
+        docker cp nginx/default.conf nginx-lb:/etc/nginx/conf.d/default.conf
+
+        echo "=== Checking nginx config inside container ==="
+        docker exec nginx-lb cat /etc/nginx/conf.d/default.conf
+
+        docker exec nginx-lb nginx -t
+        docker exec nginx-lb nginx -s reload
+        '''
+    }
+}
 
     }
 }
