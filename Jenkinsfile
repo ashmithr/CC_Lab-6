@@ -30,13 +30,12 @@ pipeline {
             steps {
                 sh '''
                 docker rm -f nginx-lb || true
-                docker run -d \
-                  --network lab6-network \
-                  --name nginx-lb \
-                  -p 80:80 \
-                  -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf \
-                  nginx
+                docker run -d --network lab6-network --name nginx-lb -p 80:80 nginx
                 sleep 3
+
+                docker cp nginx/default.conf nginx-lb:/etc/nginx/conf.d/default.conf
+                docker exec nginx-lb nginx -t
+                docker exec nginx-lb nginx -s reload
                 '''
             }
         }
