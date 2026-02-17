@@ -11,9 +11,7 @@ pipeline {
 
         stage('Create Network') {
             steps {
-                sh '''
-                docker network create lab6-network || true
-                '''
+                sh 'docker network create lab6-network || true'
             }
         }
 
@@ -29,19 +27,19 @@ pipeline {
         }
 
         stage('Run NGINX') {
-    steps {
-        sh '''
-        docker rm -f nginx-lb || true
-        docker run -d \
-        --network lab6-network \
-        --name nginx-lb \
-        -p 80:80 \
-        -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf \
-        nginx
-        sleep 3
-        '''
-    }
-}
+            steps {
+                sh '''
+                docker rm -f nginx-lb || true
+                docker run -d \
+                  --network lab6-network \
+                  --name nginx-lb \
+                  -p 80:80 \
+                  -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf \
+                  nginx
+                sleep 3
+                '''
+            }
         }
+
     }
 }
